@@ -5,11 +5,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-const sampleQrCodes = [
-  { _id: "1", data: "Sample Data 1", createdAt: new Date().toISOString() },
-  { _id: "2", data: "Sample Data 2", createdAt: new Date().toISOString() },
-];
-
 const Dashboard = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -29,6 +24,7 @@ const Dashboard = () => {
     const fetchUser = async () => {
       try {
         const res = await axios.get(`/api/users/${session.user.id}`);
+
         setUser(res.data);
       } catch (err) {
         setError("Error fetching user data");
@@ -47,7 +43,6 @@ const Dashboard = () => {
         userId: session.user.id,
       });
       alert("QR code redeemed successfully!");
-      // Optionally refresh the user data or redirect
       router.reload();
     } catch (err) {
       alert("Error redeeming QR code");
@@ -56,12 +51,7 @@ const Dashboard = () => {
     }
   };
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+  if (loading) return <p className="text-center">Loading...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
@@ -89,12 +79,12 @@ const Dashboard = () => {
 
         <div>
           <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-            Sample QR Codes
+            QR Codes
           </h2>
           <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-            {sampleQrCodes.length > 0 ? (
+            {user?.qrCodes?.length > 0 ? (
               <ul className="space-y-4">
-                {sampleQrCodes.map((qrCode) => (
+                {user.qrCodes.map((qrCode) => (
                   <li
                     key={qrCode._id}
                     className="bg-white p-4 rounded-lg shadow-md border border-gray-200"
