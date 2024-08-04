@@ -24,7 +24,6 @@ const Dashboard = () => {
     const fetchUser = async () => {
       try {
         const res = await axios.get(`/api/users/${session.user.id}`);
-
         setUser(res.data);
       } catch (err) {
         setError("Error fetching user data");
@@ -34,12 +33,19 @@ const Dashboard = () => {
     };
 
     fetchUser();
+
+    // Check for pending QR code in local storage
+    const pendingQRCode = localStorage.getItem("pendingQRCode");
+    if (pendingQRCode) {
+      handleRedeem(pendingQRCode);
+      localStorage.removeItem("pendingQRCode"); // Clear the pending QR code
+    }
   }, [session, status, router]);
 
   const handleRedeem = async (qrCodeId) => {
     setRedeemingId(qrCodeId);
     try {
-      const res = await axios.post(`/api/redeem/${qrCodeId}`, {
+      const res = await axios.post(`/api/redirect/${qrCodeId}`, {
         userId: session.user.id,
       });
       alert("QR code redeemed successfully!");
@@ -84,24 +90,25 @@ const Dashboard = () => {
           <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
             {user?.qrCodes?.length > 0 ? (
               <ul className="space-y-4">
-                {user.qrCodes.map((qrCode) => (
+                {user.qrCodes.map((qrCode, index) => (
                   <li
-                    key={qrCode._id}
+                    key={index}
                     className="bg-white p-4 rounded-lg shadow-md border border-gray-200"
                   >
                     <p className="text-gray-800">
-                      <span className="font-semibold">Data:</span> {qrCode.data}
+                      <span className="font-semibold">Data:</span>{" "}
+                      {qrCode?.data}
                     </p>
                     <p className="text-gray-600">
                       <span className="font-semibold">Created At:</span>{" "}
-                      {new Date(qrCode.createdAt).toLocaleDateString()}
+                      {new Date(qrCode?.createdAt).toLocaleDateString()}
                     </p>
                     <button
                       onClick={() => handleRedeem(qrCode._id)}
                       className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      disabled={redeemingId === qrCode._id}
+                      disabled={redeemingId === qrCode?._id}
                     >
-                      {redeemingId === qrCode._id
+                      {redeemingId === qrCode?._id
                         ? "Redeeming..."
                         : "Redeem QR Code"}
                     </button>

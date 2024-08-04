@@ -14,7 +14,7 @@ export async function GET(req, { params }) {
   }
 
   try {
-    const user = await User.findById(params.id);
+    const user = await User.findById(params.id).populate("qrCodes");
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }

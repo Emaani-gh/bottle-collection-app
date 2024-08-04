@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import qrCodes from "./qrCode";
-// import QrCode from "@app/models/QrCode";
 
 qrCodes;
 const UserSchema = new mongoose.Schema({
