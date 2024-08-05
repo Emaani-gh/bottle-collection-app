@@ -11,7 +11,7 @@ const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [redeemingId, setRedeemingId] = useState(null);
+  const [redeeming, setRedeeming] = useState(false);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -37,28 +37,41 @@ const Dashboard = () => {
     // Check for pending QR code in local storage
     const pendingQRCode = localStorage.getItem("pendingQRCode");
     if (pendingQRCode) {
-      handleRedeem(pendingQRCode);
+      handleRedeem([pendingQRCode]);
       localStorage.removeItem("pendingQRCode"); // Clear the pending QR code
     }
   }, [session, status, router]);
 
-  const handleRedeem = async (qrCodeId) => {
-    setRedeemingId(qrCodeId);
+  const handleRedeem = async (qrCodes) => {
+    setRedeeming(true);
     try {
-      const res = await axios.post(`/api/redirect/${qrCodeId}`, {
-        userId: session.user.id,
-      });
-      alert("QR code redeemed successfully!");
+      await Promise.all(
+        qrCodes.map((qrCodeId) =>
+          axios.post(`/api/redirect/${qrCodeId}`, {
+            userId: session.user.id,
+          })
+        )
+      );
+      alert("QR codes redeemed successfully!");
       router.reload();
     } catch (err) {
-      alert("Error redeeming QR code");
+      alert("Error redeeming QR codes");
     } finally {
-      setRedeemingId(null);
+      setRedeeming(false);
     }
   };
 
-  if (loading) return <p className="text-center">Loading...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500">{error}</p>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -89,32 +102,32 @@ const Dashboard = () => {
           </h2>
           <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
             {user?.qrCodes?.length > 0 ? (
-              <ul className="space-y-4">
-                {user.qrCodes.map((qrCode, index) => (
-                  <li
-                    key={index}
-                    className="bg-white p-4 rounded-lg shadow-md border border-gray-200"
-                  >
-                    <p className="text-gray-800">
-                      <span className="font-semibold">Data:</span>{" "}
-                      {qrCode?.data}
-                    </p>
-                    <p className="text-gray-600">
-                      <span className="font-semibold">Created At:</span>{" "}
-                      {new Date(qrCode?.createdAt).toLocaleDateString()}
-                    </p>
-                    <button
-                      onClick={() => handleRedeem(qrCode._id)}
-                      className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      disabled={redeemingId === qrCode?._id}
+              <div>
+                <ul className="space-y-4">
+                  {user.qrCodes.map((qrCode, index) => (
+                    <li
+                      key={index}
+                      className="bg-white p-4 rounded-lg shadow-md border border-gray-200"
                     >
-                      {redeemingId === qrCode?._id
-                        ? "Redeeming..."
-                        : "Redeem QR Code"}
-                    </button>
-                  </li>
-                ))}
-              </ul>
+                      <p className="text-gray-800">
+                        <span className="font-semibold">Data:</span>{" "}
+                        {qrCode?.data}
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-semibold">Created At:</span>{" "}
+                        {new Date(qrCode?.createdAt).toLocaleDateString()}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => handleRedeem(user.qrCodes.map((qr) => qr._id))}
+                  className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  disabled={redeeming}
+                >
+                  {redeeming ? "Redeeming..." : "Redeem All QR Codes"}
+                </button>
+              </div>
             ) : (
               <p>No QR codes available.</p>
             )}

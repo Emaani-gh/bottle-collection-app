@@ -31,12 +31,6 @@ const NavBar = () => {
           </a>
           {session && (
             <>
-              <a
-                href="/profile"
-                className="hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Profile
-              </a>
               <button
                 onClick={handleLogout}
                 className="hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
