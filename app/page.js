@@ -3,7 +3,7 @@ import Head from "next/head";
 
 export default function Home() {
   return (
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 min-h-screen flex flex-col">
       <Head>
         <title>Recycling for a Better Future</title>
         <meta
@@ -32,7 +32,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-16">
+      <main className="container mx-auto px-6 py-16 flex-1">
         <section className="text-center">
           <h1 className="text-4xl font-bold text-gray-800">
             Recycling for a Better Future
@@ -53,7 +53,7 @@ export default function Home() {
             Features
           </h2>
           <div className="flex flex-wrap justify-center mt-8">
-            <div className="w-1/3 p-4">
+            <div className="w-full sm:w-1/2 lg:w-1/3 p-4">
               <div className="bg-white shadow-lg rounded-lg p-6">
                 <h3 className="text-xl font-bold text-gray-800">Easy to Use</h3>
                 <p className="mt-2 text-gray-600">
@@ -61,7 +61,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="w-1/3 p-4">
+            <div className="w-full sm:w-1/2 lg:w-1/3 p-4">
               <div className="bg-white shadow-lg rounded-lg p-6">
                 <h3 className="text-xl font-bold text-gray-800">
                   Track Your Progress
@@ -71,7 +71,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="w-1/3 p-4">
+            <div className="w-full sm:w-1/2 lg:w-1/3 p-4">
               <div className="bg-white shadow-lg rounded-lg p-6">
                 <h3 className="text-xl font-bold text-gray-800">
                   Redeem Rewards
@@ -106,7 +106,7 @@ export default function Home() {
             Testimonials
           </h2>
           <div className="flex flex-wrap justify-center mt-8">
-            <div className="w-1/3 p-4">
+            <div className="w-full sm:w-1/2 lg:w-1/3 p-4">
               <div className="bg-white shadow-lg rounded-lg p-6">
                 <p className="text-gray-600">
                   "This system makes recycling so easy and rewarding!"
@@ -114,7 +114,7 @@ export default function Home() {
                 <p className="mt-4 text-gray-800 font-bold">- John Doe</p>
               </div>
             </div>
-            <div className="w-1/3 p-4">
+            <div className="w-full sm:w-1/2 lg:w-1/3 p-4">
               <div className="bg-white shadow-lg rounded-lg p-6">
                 <p className="text-gray-600">
                   "I love being able to track my progress and see my impact."
@@ -122,7 +122,7 @@ export default function Home() {
                 <p className="mt-4 text-gray-800 font-bold">- Jane Smith</p>
               </div>
             </div>
-            <div className="w-1/3 p-4">
+            <div className="w-full sm:w-1/2 lg:w-1/3 p-4">
               <div className="bg-white shadow-lg rounded-lg p-6">
                 <p className="text-gray-600">
                   "The rewards program is a great incentive to keep recycling!"

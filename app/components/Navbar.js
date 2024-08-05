@@ -20,7 +20,7 @@ const NavBar = () => {
           className="text-2xl font-bold cursor-pointer"
           onClick={() => router.push("/")}
         >
-          MyApp
+          OPETEY
         </h1>
         <div className="space-x-4">
           <a

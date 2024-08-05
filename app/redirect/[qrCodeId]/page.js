@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Spinner from "@/app/components/Spinner";
 
 const RedirectPage = ({ params }) => {
   const { qrCodeId } = params;
@@ -38,7 +39,12 @@ const RedirectPage = ({ params }) => {
     }
   };
 
-  if (loading) return <p className="text-center">Processing...</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner />
+      </div>
+    );
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
@@ -51,7 +57,7 @@ const RedirectPage = ({ params }) => {
           className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
           disabled={redeeming}
         >
-          {redeeming ? "Redeeming..." : "Redeem QR Code"}
+          {redeeming ? <Spinner /> : "Redeem QR Code"}
         </button>
       </div>
     </div>

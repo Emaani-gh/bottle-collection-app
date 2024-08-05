@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Spinner from "@/app/components/Spinner";
 
 const Dashboard = () => {
   const { data: session, status } = useSession();
@@ -64,7 +65,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
+        <Spinner />
       </div>
     );
   }
@@ -125,7 +126,7 @@ const Dashboard = () => {
                   className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   disabled={redeeming}
                 >
-                  {redeeming ? "Redeeming..." : "Redeem All QR Codes"}
+                  {redeeming ? <Spinner /> : "Redeem All QR Codes"}
                 </button>
               </div>
             ) : (
