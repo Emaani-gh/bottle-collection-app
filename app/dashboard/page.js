@@ -62,12 +62,12 @@ const Dashboard = () => {
 
       if (allSuccess) {
         setMessage("All QR codes redeemed successfully!");
+        // Fetch updated user data after successful redemption
+        const res = await axios.get(`/api/users/${session.user.id}`);
+        setUser(res.data);
       } else {
         setMessage(messages.join("\n"));
       }
-
-      // Optionally reload or fetch the user data again
-      router.reload();
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
         setMessage(err.response.data.message);
