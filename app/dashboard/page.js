@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [redeeming, setRedeeming] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     if (status === "loading") return;
@@ -45,21 +46,50 @@ const Dashboard = () => {
 
   const handleRedeem = async (qrCodes) => {
     setRedeeming(true);
+    setMessage(""); // Clear any existing messages
+
     try {
-      await Promise.all(
+      const responses = await Promise.all(
         qrCodes.map((qrCodeId) =>
           axios.post(`/api/redirect/${qrCodeId}`, {
             userId: session.user.id,
           })
         )
       );
-      alert("QR codes redeemed successfully!");
+
+      const messages = responses.map((response) => response.data.message);
+      const allSuccess = responses.every((response) => response.status === 200);
+
+      if (allSuccess) {
+        setMessage("All QR codes redeemed successfully!");
+      } else {
+        setMessage(messages.join("\n"));
+      }
+
+      // Optionally reload or fetch the user data again
       router.reload();
     } catch (err) {
-      alert("Error redeeming QR codes");
+      if (err.response && err.response.data && err.response.data.message) {
+        setMessage(err.response.data.message);
+      } else {
+        setMessage("Error redeeming QR codes");
+      }
     } finally {
       setRedeeming(false);
     }
+  };
+
+  useEffect(() => {
+    if (message) {
+      alert(message);
+      setMessage(""); // Clear the message after showing
+    }
+  }, [message]);
+
+  const calculateTotalAmount = () => {
+    return user?.qrCodes
+      .reduce((total, qrCode) => total + qrCode.counter * qrCode.unitPrice, 0)
+      .toFixed(2);
   };
 
   if (loading) {
@@ -104,6 +134,9 @@ const Dashboard = () => {
           <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
             {user?.qrCodes?.length > 0 ? (
               <div>
+                <p className="text-lg font-semibold mb-4">
+                  Total Amount: GHS {calculateTotalAmount()}
+                </p>
                 <ul className="space-y-4">
                   {user.qrCodes.map((qrCode, index) => (
                     <li
@@ -111,12 +144,24 @@ const Dashboard = () => {
                       className="bg-white p-4 rounded-lg shadow-md border border-gray-200"
                     >
                       <p className="text-gray-800">
-                        <span className="font-semibold">Data:</span>{" "}
-                        {qrCode?.data}
+                        <span className="font-semibold">Barcode:</span>{" "}
+                        {qrCode?.barcode}
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-semibold">Counter:</span>{" "}
+                        {qrCode?.counter}
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-semibold">Unit Price:</span>{" "}
+                        {qrCode?.unitPrice}
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-semibold">Total Amount:</span>{" "}
+                        {(qrCode?.counter * qrCode?.unitPrice).toFixed(2)}
                       </p>
                       <p className="text-gray-600">
                         <span className="font-semibold">Created At:</span>{" "}
-                        {new Date(qrCode?.createdAt).toLocaleDateString()}
+                        {new Date(qrCode?.timestamp).toLocaleDateString()}
                       </p>
                     </li>
                   ))}

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import qrCodes from "./qrCode";
+import qrCodes from "@/app/models/DocumentsEntity";
 
 qrCodes;
 const UserSchema = new mongoose.Schema({
@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
   qrCodes: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "QrCode",
+      ref: "DocumentsEntity",
     },
   ],
 });
