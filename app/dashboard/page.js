@@ -86,10 +86,25 @@ const Dashboard = () => {
     }
   }, [message]);
 
+  const calculateCounter = () => {
+    return user?.qrCodes.length || 0;
+  };
+
   const calculateTotalAmount = () => {
     return user?.qrCodes
-      .reduce((total, qrCode) => total + qrCode.counter * qrCode.unitPrice, 0)
+      .reduce((total, qrCode) => total + qrCode.unitPrice, 0)
       .toFixed(2);
+  };
+
+  const getUnitPrice = () => {
+    return user?.qrCodes[0]?.unitPrice || 0;
+  };
+
+  const getLastTimestamp = () => {
+    const lastQRCode = user?.qrCodes[user.qrCodes.length - 1];
+    return lastQRCode
+      ? new Date(lastQRCode.timestamp).toLocaleDateString()
+      : "";
   };
 
   if (loading) {
@@ -135,9 +150,18 @@ const Dashboard = () => {
             {user?.qrCodes?.length > 0 ? (
               <div>
                 <p className="text-lg font-semibold mb-4">
+                  Total Items: {calculateCounter()}
+                </p>
+                <p className="text-lg font-semibold mb-4">
                   Total Amount: GHS {calculateTotalAmount()}
                 </p>
-                <ul className="space-y-4">
+                <p className="text-lg font-semibold mb-4">
+                  Unit Price: GHS {getUnitPrice()}
+                </p>
+                <p className="text-lg font-semibold mb-4">
+                  Last Transaction Date: {getLastTimestamp()}
+                </p>
+                {/* <ul className="space-y-4">
                   {user.qrCodes.map((qrCode, index) => (
                     <li
                       key={index}
@@ -165,7 +189,7 @@ const Dashboard = () => {
                       </p>
                     </li>
                   ))}
-                </ul>
+                </ul> */}
                 <button
                   onClick={() => handleRedeem(user.qrCodes.map((qr) => qr._id))}
                   className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"

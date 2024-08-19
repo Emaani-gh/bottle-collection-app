@@ -20,55 +20,54 @@ export async function POST(req, { params }) {
       );
     }
 
-    // Check if QR code exists
-    const qrCode = await DocumentsEntity.findOne({ userId: qrCodeId });
+    // Query all QR codes where userId matches qrCodeId
+    const qrCodes = await DocumentsEntity.find({ userId: qrCodeId });
 
-    if (!qrCode) {
-      console.error("QR Code not found:", { qrCodeId });
+    if (qrCodes.length === 0) {
+      console.error("No QR Codes found for userId:", { qrCodeId });
       return NextResponse.json(
-        { message: "QR code not found" },
+        { message: "No QR codes found" },
         { status: 404 }
       );
     }
 
-    // Check if QR code is already redeemed
-    if (qrCode.redeemed) {
-      console.error("QR Code already redeemed:", { qrCodeId });
-      return NextResponse.json(
-        { message: "QR code already redeemed" },
-        { status: 400 }
-      );
-    }
-
-    // Find user by ID
+    // Retrieve the user
     const user = await User.findById(userId);
 
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    // Check if the QR code is already in the user's list
-    if (user.qrCodes.includes(qrCode._id)) {
-      console.error("QR Code already in user's list:", { qrCodeId });
+    // Process each QR code
+    let qrCodesRedeemed = 0;
+    for (const qrCode of qrCodes) {
+      // Only proceed if the QR code is not already redeemed
+      if (!user.qrCodes.includes(qrCode._id)) {
+        // Add QR code to user's list
+        user.qrCodes.push(qrCode._id);
+
+        // Mark the QR code as redeemed
+        qrCode.redeemed = true; // Adding the redeemed field
+        await qrCode.save();
+
+        qrCodesRedeemed++;
+      }
+    }
+
+    await user.save();
+
+    if (qrCodesRedeemed === 0) {
       return NextResponse.json(
-        { message: "QR code already redeemed by this user" },
+        { message: "No QR codes redeemed" },
         { status: 400 }
       );
     }
 
-    // Add QR code to user's list
-    user.qrCodes.push(qrCode._id);
-    await user.save();
-
-    // Mark the QR code as redeemed
-    qrCode.redeemed = true;
-    await qrCode.save();
-
-    // Fetch the user again to ensure the QR code is added
+    // Fetch the updated user with populated QR codes
     const updatedUser = await User.findById(userId).populate("qrCodes");
 
     return NextResponse.json({
-      message: "QR code redeemed successfully",
+      message: `Successfully redeemed ${qrCodesRedeemed} QR code(s)`,
       user: updatedUser,
     });
   } catch (error) {
