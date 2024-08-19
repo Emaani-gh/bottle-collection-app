@@ -159,7 +159,7 @@ const Dashboard = () => {
                   Unit Price: GHS {getUnitPrice()}
                 </p>
                 <p className="text-lg font-semibold mb-4">
-                  Last Transaction Date: {getLastTimestamp()}
+                  Transaction Date: {getLastTimestamp()}
                 </p>
                 {/* <ul className="space-y-4">
                   {user.qrCodes.map((qrCode, index) => (
@@ -191,7 +191,11 @@ const Dashboard = () => {
                   ))}
                 </ul> */}
                 <button
-                  onClick={() => handleRedeem(user.qrCodes.map((qr) => qr._id))}
+                  onClick={() =>
+                    /*handleRedeem(user.qrCodes.map((qr) => qr._id))*/ router.push(
+                      "/dashboard/redeem"
+                    )
+                  }
                   className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   disabled={redeeming}
                 >
